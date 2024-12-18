@@ -1,24 +1,15 @@
-from typing import Optional
-
-from fastapi import FastAPI
-
-app = FastAPI()
-
-
-from typing import Union
+from typing import Optional, Union
 import requests
 from bs4 import BeautifulSoup
-
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
-
 @app.get("/")
 def read_root():
-    return {"message":  "Welcome to home notes backend API"}
+    return {"message":  "Welcome to our backend API"}
 
 
 @app.post('/api')

@@ -5,10 +5,44 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+from typing import Union
+import requests
+from bs4 import BeautifulSoup
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+
+app = FastAPI()
+
+
+@app.get("/")
+def read_root():
+    return {"message":  "Welcome to home notes backend API"}
+
+
+@app.post('/api')
+def scrap_images(url= 'https://www.drench.co.uk/p/harbour-acclaim-rimless-wm-pan-soft-close-seat'):
+    try:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
+        images = soup.find_all('img')
+        image_urls = []
+        for image in images:
+            image_src = (
+                image.get("src") or 
+                image.get("data-src") or 
+                image.get("data-lazy") or 
+                image.get("data-original")
+            )
+            
+            if image_src:
+                image_urls.append(image_src)
+        
+        # Return the list of image URLs as a JSON response
+        return JSONResponse(content={"image_urls": image_urls})
+        
+    except requests.exceptions.RequestException as e:
+        # Handle any request exceptions
+        return {"error": str(e)}
+

@@ -41,6 +41,30 @@ def scrap_images(url= 'https://www.drench.co.uk/p/harbour-acclaim-rimless-wm-pan
     try:
         response = requests.get(url)
         soup = BeautifulSoup(response.content, "html.parser")
+        
+        # Extract values
+        og_title = get_meta_property(soup, "og:title")
+        price_amount = get_meta_property(soup, "product:price:amount")
+        og_image = get_meta_property(soup, "og:image")
+        og_site_name = get_meta_property(soup, "og:site_name")
+
+        # Return the list of image URLs as a JSON response
+        return JSONResponse(content={'og title': og_title,
+                                    'price amount': price_amount,
+                                    'og image': og_image,
+                                    'og site name': og_site_name})
+        
+    except requests.exceptions.RequestException as e:
+        # Handle any request exceptions
+        return {"error": str(e)}
+
+
+
+@app.post('/api_images')
+def scrap_images(url= 'https://www.drench.co.uk/p/harbour-acclaim-rimless-wm-pan-soft-close-seat'):
+    try:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
 
 
         image_urls = get_all_images(soup)
@@ -61,4 +85,5 @@ def scrap_images(url= 'https://www.drench.co.uk/p/harbour-acclaim-rimless-wm-pan
     except requests.exceptions.RequestException as e:
         # Handle any request exceptions
         return {"error": str(e)}
+
 
